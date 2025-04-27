@@ -1,25 +1,65 @@
-# CargaDatos/CargarBBDD.py
-import configparser
+import mysql.connector
 
 class CargarBBDD:
-    def __init__(self):
-        self.config = configparser.ConfigParser()
-        self.config.read('Recursos/config.ini')  # Archivo de configuración con los datos de la BBDD
+    def ejecutar(self):
+        try:
+            conexion = mysql.connector.connect(
+                host="localhost",
+                user="root",
+                password="",
+                database="bancolibros"
+            )
+            cursor = conexion.cursor()
 
-    def cargar_datos(self, nombre_fichero):
-        print(f"Cargando datos desde el fichero: {nombre_fichero}")
-        # Lógica para cargar los datos en la BBDD 'proyecto'
-        print("Datos cargados correctamente. Libros listados en formato de lista.")
+            # Aquí puedes pedir al usuario datos para cargar registros, por ejemplo:
+            tabla = input("¿Qué tabla deseas cargar? (alumnos / cursos / materias / libros): ").strip().lower()
 
-    def actualizar_stock(self):
-        print("Stock de libros actualizado si ha habido cambios.")
+            if tabla == "alumnos":
+                nie = input("Introduce NIE: ")
+                nombre = input("Introduce Nombre: ")
+                apellidos = input("Introduce Apellidos: ")
+                tramo = input("Introduce Tramo (0, 1 o 2): ")
+                bilingue = input("¿Es bilingüe? (0 = Sí, 1 = No): ")
 
-    def copia_seguridad(self):
-        print("Realizando copia de seguridad de la base de datos.")
-        # Lógica para la copia de seguridad
+                sql = "INSERT INTO alumnos (nie, nombre, apellidos, tramo, bilingue) VALUES (%s, %s, %s, %s, %s)"
+                valores = (nie, nombre, apellidos, tramo, bilingue)
+                cursor.execute(sql, valores)
 
-if __name__ == "__main__":
-    cargar = CargarBBDD()
-    cargar.cargar_datos("ejemplo.txt")
-    cargar.actualizar_stock()
-    cargar.copia_seguridad()
+            elif tabla == "cursos":
+                curso = input("Introduce nombre del curso: ")
+                nivel = input("Introduce nivel: ")
+                sql = "INSERT INTO cursos (curso, nivel) VALUES (%s, %s)"
+                valores = (curso, nivel)
+                cursor.execute(sql, valores)
+
+            elif tabla == "materias":
+                id_materia = int(input("Introduce ID de la materia: "))
+                nombre = input("Introduce Nombre: ")
+                departamento = input("Introduce Departamento: ")
+                sql = "INSERT INTO materias (id, nombre, departamento) VALUES (%s, %s, %s)"
+                valores = (id_materia, nombre, departamento)
+                cursor.execute(sql, valores)
+
+            elif tabla == "libros":
+                isbn = input("Introduce ISBN: ")
+                titulo = input("Introduce Título: ")
+                autor = input("Introduce Autor: ")
+                numero_ejemplares = int(input("Introduce Número de Ejemplares: "))
+                id_materia = int(input("Introduce ID de Materia: "))
+                id_curso = input("Introduce ID de Curso: ")
+                sql = "INSERT INTO libros (isbn, titulo, autor, numero_ejemplares, id_materia, id_curso) VALUES (%s, %s, %s, %s, %s, %s)"
+                valores = (isbn, titulo, autor, numero_ejemplares, id_materia, id_curso)
+                cursor.execute(sql, valores)
+
+            else:
+                print("❌ Tabla no válida.")
+                return
+
+            conexion.commit()
+            print(f"✅ Datos insertados en {tabla} correctamente.")
+        except mysql.connector.Error as e:
+            print(f"❌ Error al cargar la base de datos: {e}")
+        finally:
+            if conexion.is_connected():
+                cursor.close()
+                conexion.close()

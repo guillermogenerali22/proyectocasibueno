@@ -4,7 +4,7 @@ from Generales.logout import Logout
 from CargaDatos.VaciarBBDD import VaciarBBDD
 from CargaDatos.GestionErrores import GestionErrores
 from CargaDatos.CargarBBDD import CargarBBDD
-from GestionAlumnos.FiltrarAlumnos import FiltrarAlumnos
+from GestionAlumnos.FiltrarAlumnos import GestionAlumnos
 from GestionAlumnos.Subcaso import Subcaso
 from GestionPrestamos.GestionPrestamos import GestionPrestamos
 from GestionListados.GestionListados import GestionListados
@@ -39,7 +39,7 @@ def main():
         elif opcion == "4":
             CargarBBDD().ejecutar()
         elif opcion == "5":
-            FiltrarAlumnos().ejecutar()
+            GestionAlumnos().ejecutar()
         elif opcion == "6":
             Subcaso().ejecutar()
         elif opcion == "7":
